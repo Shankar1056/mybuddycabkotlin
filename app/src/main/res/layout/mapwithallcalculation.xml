@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        android:id="@+id/addresslayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="@dimen/margin_10">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <TextView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:background="@drawable/circularsource"/>
+        <TextView
+            android:id="@+id/textsource"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/margin_10">
+        <TextView
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:background="@drawable/circulardest"/>
+        <TextView
+            android:id="@+id/textdest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:singleLine="true"
+            android:layout_marginLeft="10dp"/>
+    </LinearLayout>
+    </LinearLayout>
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/addresslayout"
+        android:layout_above="@+id/bottomlayout"
+        tools:context="apextechies.mybuddycab.activity.MapWithAllCalculation" />
+<LinearLayout
+    android:id="@+id/bottomlayout"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/margin_50"
+    android:orientation="horizontal"
+    android:background="@color/otp_button_color"
+    android:layout_alignParentBottom="true">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight=".5"
+        android:text="@string/buknow"
+        android:textColor="@color/white"
+        android:gravity="center"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight=".5"
+        android:text="@string/buklater"
+        android:textColor="@color/white"
+        android:gravity="center"/>
+
+</LinearLayout>
+</RelativeLayout>
