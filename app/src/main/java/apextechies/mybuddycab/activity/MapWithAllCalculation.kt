@@ -19,11 +19,10 @@ import kotlinx.android.synthetic.main.mapwithallcalculation.*
 import org.joda.time.DateTime
 import java.io.IOException
 import java.lang.IllegalStateException
-import java.util.ArrayList
+import java.util.concurrent.TimeUnit
 
 class MapWithAllCalculation : AppCompatActivity(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
-    internal var markerPoints = ArrayList<LatLng>()
     var directionApi = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,49 +44,42 @@ class MapWithAllCalculation : AppCompatActivity(), OnMapReadyCallback {
     private fun getIntentData() {
         textsource!!.text = intent.getStringExtra("source")
         textdest!!.text = intent.getStringExtra("destination")
-        val mCurrentLocationSource: LatLng
-        val mCurrentLocationDest: LatLng
         val currentLatSource = intent.getDoubleExtra("currentLatSource", 0.0)
         val currentLonSource = intent.getDoubleExtra("currentLonSource", 0.0)
         val currentLatDest = intent.getDoubleExtra("currentLatDest", 0.0)
         val currentLonDest = intent.getDoubleExtra("currentLonDest", 0.0)
-        mCurrentLocationSource = LatLng(currentLatSource, currentLonSource)
-        mCurrentLocationDest = LatLng(currentLatDest, currentLonDest)
-
-        markerPoints.add(mCurrentLocationSource)
-        markerPoints.add(mCurrentLocationDest)
-        val options = MarkerOptions()
-        options.position(mCurrentLocationSource)
+        val  mCurrentLocationSource = LatLng(currentLatSource, currentLonSource)
+        val mCurrentLocationDest = LatLng(currentLatDest, currentLonDest)
 
 
-        for (i in 0 until 2){
-            if (i==0)   drawerMarker(mCurrentLocationSource,intent.getStringExtra("source"))
-            if (i==1)   drawerMarker(mCurrentLocationDest, intent.getStringExtra("destination"))
-        }
 
-       var result =  getDirectionsDetails(intent.getStringExtra("source"),intent.getStringExtra("destination"),TravelMode.DRIVING);
+        var result =  getDirectionsDetails(intent.getStringExtra("source"),intent.getStringExtra("destination"),TravelMode.DRIVING);
         if (result != null) {
             getEndLocationTitle(result)
             addPolyline(result)
             addMarkersToMap(result)
         }
 
+        createMarker(mCurrentLocationSource, intent.getStringExtra("source"), BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        createMarker(mCurrentLocationDest, intent.getStringExtra("destination"), BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+
+
 
     }
 
-    private fun drawerMarker(mCurrentLocationSource: LatLng, stringExtra: String) {
-        val markerOptions =  MarkerOptions()
-        markerOptions.position(mCurrentLocationSource)
-        markerOptions.title(stringExtra)
-        mMap!!.addMarker(markerOptions)
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(mCurrentLocationSource))
+    @Synchronized
+    private fun createMarker(currentLatSource: LatLng, stringExtra: String?, defaultMarker: BitmapDescriptor?) {
 
-// Setting the zoom level in the map on last position is clicked
-        mMap!!.animateCamera(CameraUpdateFactory.zoomTo(15.0f));
+            mMap?.addMarker(MarkerOptions()
+                    .position(currentLatSource)
+                    .anchor(0.5f, 0.5f)
+                    .title(stringExtra)
+                    .icon(defaultMarker))
 
+            mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLatSource, 15.0f))
 
+    }
 
-}
 
 
     private fun getDirectionsDetails(origin: String, destination: String, mode: TravelMode): DirectionsResult? {
@@ -97,7 +89,7 @@ class MapWithAllCalculation : AppCompatActivity(), OnMapReadyCallback {
                 val geoApiContext = GeoApiContext()
                  geoApiContext.setQueryRateLimit(3)
                         .setApiKey(directionApi)
-                //.setConnectTimeout(1, TimeUnit.SECONDS).setReadTimeout(1, TimeUnit.SECONDS).setWriteTimeout(1, TimeUnit.SECONDS)
+                .setConnectTimeout(1, TimeUnit.SECONDS).setReadTimeout(1, TimeUnit.SECONDS).setWriteTimeout(1, TimeUnit.SECONDS)
 
                 return DirectionsApi.newRequest(geoApiContext)
                         .mode(mode)

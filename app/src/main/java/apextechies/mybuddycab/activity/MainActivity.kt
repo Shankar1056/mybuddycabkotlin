@@ -7,14 +7,17 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
+import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.Toast
+import apextechies.mybuddycab.BuildConfig
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -54,6 +57,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         mLocationDest = Location("")
         initWidget()
         initMap()
+        if (!checkPermissions()) {
+            requestPermissions()
+        } else {
+            getLastLocation()
+        }
 
     }
 
@@ -75,7 +83,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
             }
         }
         btn_save.setOnClickListener {
-            getLocation()
+            if (source.text.toString().trim().equals("")){
+                Toast.makeText(this, "select source location", Toast.LENGTH_SHORT).show()
+            }else if (destination.text.toString().trim().equals("")){
+                Toast.makeText(this, "select Destination location", Toast.LENGTH_SHORT).show()
+            }else {
+                getLocation()
+            }
         }
         source!!.setOnClickListener {
             forsource = true
@@ -110,11 +124,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
         mMap!!.setOnCameraChangeListener(this)
         googleMap.setOnMapClickListener(this)
 
-        if (!checkPermissions()) {
-            requestPermissions()
-        } else {
-            getLastLocation()
-        }
+
     }
 
 
@@ -283,7 +293,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
                 Manifest.permission.ACCESS_COARSE_LOCATION)
 
         if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.")
+            ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
+                    REQUEST_PERMISSIONS_REQUEST_CODE)
 
         } else {
             Log.i(TAG, "Requesting permission")
@@ -300,6 +312,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback, LocationListener, 
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLastLocation()
             } else {
+                 val intent =  Intent()
+                                intent.setAction(
+                                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                val uri = Uri.fromParts("package",
+                                        BuildConfig.APPLICATION_ID, null);
+                                intent.setData(uri);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                startActivity(intent);
             }
         }
     }

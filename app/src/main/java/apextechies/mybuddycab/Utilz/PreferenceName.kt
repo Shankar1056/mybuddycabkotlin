@@ -10,7 +10,7 @@ object PreferenceName {
     var LATITUTEDEST = "latitutedest"
     var LONGITUTEDEST = "longitutedest"
 
-    var SERVERKEY = "key=AIzaSyDdJUJuXWGDk9uvBjWzg8118E6y84oIsVc"
+    var SERVERKEY = "key=AIzaSyAB3CdXDLmF3m6JD2Y_MXs9fEQRujXxzv8"
 
 
 }
